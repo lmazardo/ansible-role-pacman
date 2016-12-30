@@ -1,0 +1,37 @@
+country: France
+base_packages:
+  # general
+  - bc
+  - sharutils
+  - qiv
+  - gnupg
+  - expect
+  - arandr
+  - bash-completion
+  - pkgfile
+  - inotify-tools
+  - tree
+  - xorg-xprop
+  - zenity
+  # compilation
+  - patch
+  - automake
+  - autoconf
+  - byacc
+  # languages
+  - python
+  - perl-json
+  - perl-ldap
+  # disk
+  - lsof
+  - parted
+  - udevil
+  - mlocate
+  - ntfs-3g
+  # compression
+  - bzip2
+  - lzop
+  - p7zip
+  - unrar
+  - unzip
+  - zip
