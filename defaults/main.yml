@@ -3,7 +3,6 @@ base_packages:
   # general
   - bc
   - sharutils
-  - qiv
   - gnupg
   - expect
   - arandr
@@ -11,7 +10,6 @@ base_packages:
   - pkgfile
   - inotify-tools
   - tree
-  - xorg-xprop
   - zenity
   # compilation
   - patch
