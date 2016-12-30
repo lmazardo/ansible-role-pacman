@@ -1,39 +1,33 @@
-- name: mirrorlist.pacnew existence
-  stat: path=/etc/pacman.d/mirrorlist.pacnew
+### mirrorlist.pacnew file management
+- stat: path=/etc/pacman.d/mirrorlist.pacnew
   register: mirrorlistPacnew
 
-- name: tail mirrorlist.pacnew
-  command: sed -i -r '/## {{country}}/,/^$/ s/^#(Server)/\1/' /etc/pacman.d/mirrorlist.pacnew
+- command: /usr/bin/env sed -i -r '/## {{country}}/,/^$/ s/^#(Server)/\1/' /etc/pacman.d/mirrorlist.pacnew
   when: mirrorlistPacnew.stat.exists
 
-- name: copy mirrorlist.pacnew to mirrorlist
-  copy: src=/etc/pacman.d/mirrorlist.pacnew dest=/etc/pacman.d/mirrorlist remote_src=true
+- copy: src=/etc/pacman.d/mirrorlist.pacnew dest=/etc/pacman.d/mirrorlist remote_src=true
   when: mirrorlistPacnew.stat.exists
 
-- name: remove processed mirrorlist.pacnew
-  file: path=/etc/pacman.d/mirrorlist.pacnew state=absent
+- file: path=/etc/pacman.d/mirrorlist.pacnew state=absent
 
-- name: pacman | check for old cache
-  stat: path=/var/lib/pacman/sync/extra.db
-  register: oldCacheFound
-
-- name: check multilib activation
-  shell: grep "^\[multilib\]" /etc/pacman.conf
+### multilib
+- shell: /usr/bin/env grep "^\[multilib\]" /etc/pacman.conf
   register: multilib_activated
   changed_when: multilib_activated.rc != 0
   failed_when: false
   check_mode: no
 
-- name: activate multilib in pacman.conf
-  shell: sed -i '/^#*\[multilib\]/,/^$/ s/^#//' /etc/pacman.conf
+- shell: /usr/bin/env sed -i '/^#*\[multilib\]/,/^$/ s/^#//' /etc/pacman.conf
   notify: pacman update
   when: multilib_activated.rc != 0
 
-- name: pacman | refresh cache
-  pacman: update_cache=yes
-  # only when cache older than 1 week (7*24*60*60 seconds)
+### cache refreshing. Only when cache older than 1 week (7*24*60*60 seconds)
+- stat: path=/var/lib/pacman/sync/extra.db
+  register: oldCacheFound
+
+- pacman: update_cache=yes
   when: oldCacheFound.stat.mtime|int < (ansible_date_time.epoch|int - 604800)
 
-- name: installation of base packages
-  pacman: name={{item}} state=present
+### installation of packages
+- pacman: name={{item}} state=present
   with_items: "{{base_packages}}"
