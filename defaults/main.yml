@@ -26,6 +26,7 @@ base_packages:
   - udevil
   - mlocate
   - ntfs-3g
+  - smartmontools
   # compression
   - bzip2
   - lzop
