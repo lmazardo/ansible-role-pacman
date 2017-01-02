@@ -27,6 +27,8 @@ base_packages:
   - mlocate
   - ntfs-3g
   - smartmontools
+  - hdparm
+  - sdparm
   # compression
   - bzip2
   - lzop
