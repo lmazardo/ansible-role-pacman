@@ -7,7 +7,6 @@ base_packages:
   - expect
   - arandr
   - bash-completion
-  - pkgfile
   - inotify-tools
   - tree
   - zenity

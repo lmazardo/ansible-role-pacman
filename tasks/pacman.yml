@@ -28,6 +28,11 @@
 - pacman: update_cache=yes
   when: oldCacheFound.stat.mtime|int < (ansible_date_time.epoch|int - 604800)
 
+### pkgfile 
+- pacman: name=pkgfile
+
+- shell: pkgfile --update
+
 ### installation of packages
 - pacman: name={{item}} state=present
   with_items: "{{base_packages}}"
