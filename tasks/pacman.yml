@@ -21,6 +21,54 @@
   notify: pacman update
   when: multilib_activated.rc != 0
 
+# multilib gcc installation
+- pacman: name=gcc state=absent
+
+- shell: pacman -Q gcc-libs-multilib
+  check_mode: no
+  changed_when: false
+  ignore_errors: true
+  register: gcc_libs_multilib_installed
+
+- shell: for file in $(ldd $(which pacman) | sed -r 's/^\s*([^ ]*) .*$/\1/') ; do pacman -Ql | grep $file ; done | grep ^gcc-libs | sed 's/^.* //'
+  check_mode: no
+  changed_when: false
+  register: pacman_needed_gcc_libs_files
+  when: gcc_libs_multilib_installed|failed
+
+- copy: src={{item}} dest={{item|regex_replace('/lib/','/local/lib/')}} remote_src=true
+  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
+  when: gcc_libs_multilib_installed|failed
+
+- shell: ldconfig /usr/local/lib
+  failed_when: false
+  when: gcc_libs_multilib_installed|failed
+
+- pacman: name=gcc-libs state=absent force=yes
+  when: gcc_libs_multilib_installed|failed
+
+- pacman: name=gcc-libs-multilib
+  when: gcc_libs_multilib_installed|failed
+
+- file: path={{item|regex_replace('/lib/','/local/lib/')}} state=absent
+  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
+  when: gcc_libs_multilib_installed|failed
+
+- pacman: name={{item}}
+  with_items:
+    - gcc-multilib
+    - binutils
+    - file
+    - findutils
+    - gawk
+    - gettext
+    - grep
+    - groff
+    - gzip
+    - libtool
+    - make
+    - fakeroot
+
 ### cache refreshing. Only when cache older than 1 week (7*24*60*60 seconds)
 - stat: path=/var/lib/pacman/sync/extra.db
   register: oldCacheFound
