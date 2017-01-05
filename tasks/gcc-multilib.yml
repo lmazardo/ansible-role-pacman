@@ -1,0 +1,46 @@
+- pacman: name=gcc state=absent
+
+- shell: for file in $(ldd $(which pacman) | sed -r 's/^\s*([^ ]*) .*$/\1/') ; do pacman -Ql | grep $file ; done | grep ^gcc-libs | sed 's/^.* //'
+  check_mode: no
+  register: pacman_needed_gcc_libs_files
+
+- stat: path={{item}}
+  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
+  check_mode: no
+  register: pacman_needed_gcc_libs_files_stat
+
+- copy: src={{item.stat.path}} dest={{item.stat.path|regex_replace('/lib/','/local/lib/')}} remote_src=true
+  with_items: "{{pacman_needed_gcc_libs_files_stat.results}}"
+  when: item.stat.isreg
+
+- file: src={{item.stat.lnk_source|regex_replace('/lib/','/local/lib/')}} dest={{item.stat.path|regex_replace('/lib/','/local/lib/')}} state=link
+  with_items: "{{pacman_needed_gcc_libs_files_stat.results}}"
+  when: item.stat.islnk
+
+- pacman: name=gcc-libs state=absent force=yes
+
+- shell: ldconfig /usr/local/lib
+
+#- pause: seconds=10
+
+- shell: ldd $(which pacman) | grep "not found"
+  register: pacman_has_libs
+  failed_when: pacman_has_libs.stdout_lines != []
+
+#- copy: src={{item.stat.path|regex_replace('/lib/','/local/lib/')}} dest={{item.stat.path}} remote_src=true
+#  with_items: "{{pacman_needed_gcc_libs_files_stat.results}}"
+#  when: item.stat.isreg
+#
+#- file: src={{item.stat.lnk_source}} dest={{item.stat.path}} state=link
+#  with_items: "{{pacman_needed_gcc_libs_files_stat.results}}"
+#  when: item.stat.islnk
+
+- pacman: name=gcc-libs-multilib
+
+- file: path={{item.stat.path|regex_replace('/lib/','/local/lib/')}} state=absent
+  with_items: "{{pacman_needed_gcc_libs_files_stat.results}}"
+  when: item.stat.isreg
+
+- shell: ldconfig
+
+- pacman: name=gcc-multilib

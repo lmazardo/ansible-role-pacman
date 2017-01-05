@@ -18,44 +18,24 @@
   check_mode: no
 
 - shell: /usr/bin/env sed -i '/^#*\[multilib\]/,/^$/ s/^#//' /etc/pacman.conf
-  notify: pacman update
-  when: multilib_activated.rc != 0
+  when: multilib_activated|changed
 
-# multilib gcc installation
-- pacman: name=gcc state=absent
+- pacman: update_cache=yes
+  when: multilib_activated|changed
 
+### multilib gcc installation
 - shell: pacman -Q gcc-libs-multilib
-  check_mode: no
-  changed_when: false
-  ignore_errors: true
   register: gcc_libs_multilib_installed
-
-- shell: for file in $(ldd $(which pacman) | sed -r 's/^\s*([^ ]*) .*$/\1/') ; do pacman -Ql | grep $file ; done | grep ^gcc-libs | sed 's/^.* //'
+  changed_when: gcc_libs_multilib_installed.rc != 0
+  failed_when: false
+  ignore_errors: true
   check_mode: no
-  register: pacman_needed_gcc_libs_files
-  when: gcc_libs_multilib_installed|failed
 
-- copy: src={{item}} dest={{item|regex_replace('/lib/','/local/lib/')}} remote_src=true
-  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
-  when: gcc_libs_multilib_installed|failed
-
-- pacman: name=gcc-libs state=absent force=yes
-  when: gcc_libs_multilib_installed|failed
-
-- copy: src={{item|regex_replace('/lib/','/local/lib/')}} dest={{item}} remote_src=true
-  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
-  when: gcc_libs_multilib_installed|failed
-
-- pacman: name=gcc-libs-multilib force=yes
-  when: gcc_libs_multilib_installed|failed
-
-- file: path={{item|regex_replace('/lib/','/local/lib/')}} state=absent
-  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
-  when: gcc_libs_multilib_installed|failed
+- include: gcc-multilib.yml
+  when: gcc_libs_multilib_installed|changed
 
 - pacman: name={{item}}
   with_items:
-    - gcc-multilib
     - binutils
     - file
     - findutils
