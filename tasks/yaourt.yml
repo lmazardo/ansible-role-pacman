@@ -1,0 +1,103 @@
+# Creation of the ansibleme (default, changed by user variable) user, used for instalation purpose
+- user: name={{user}} group=users
+
+- file:
+    path: /home/{{user}}/Tmp
+    state: directory
+    mode: 0755
+    owner: "{{user}}"
+    group: users
+
+- file:
+    path: /home/{{user}}/.gnupg
+    state: directory
+    mode: 0700
+    owner: "{{user}}"
+    group: users
+
+- copy:
+    src: gnupg/gpg.conf
+    dest: /home/{{user}}/.gnupg/gpg.conf
+    owner: "{{user}}"
+    group: users
+    mode: 0700
+
+- template:
+    src: etc/sudoers.d/user
+    dest: /etc/sudoers.d/{{user}}
+    owner: root
+    group: root
+    mode: 0640
+
+# Yaourt installation
+- stat: path=/usr/bin/yaourt
+  register: yaourt
+
+- pacman: name={{item}}
+  with_items:
+    - git
+    - pkg-config
+  when: not yaourt.stat.exists
+
+- git: repo=https://aur.archlinux.org/package-query.git dest=/tmp/package-query
+  become: true
+  become_user: "{{user}}"
+  when: not yaourt.stat.exists
+
+- git: repo=https://aur.archlinux.org/yaourt.git dest=/tmp/yaourt
+  become: true
+  become_user: "{{user}}"
+  when: not yaourt.stat.exists
+
+- git: repo=https://aur.archlinux.org/yaourt.git dest=/tmp/yaourt
+  when: not yaourt.stat.exists
+
+- command: 'su {{user}} -c "makepkg -sri --noconfirm" creates={{item.creates}} chdir=/tmp/{{item.dir}}'
+  with_items:
+    - { dir: package-query, creates: /usr/bin/package-query }
+    - { dir: yaourt, creates: /usr/bin/yaourt }
+  when: not yaourt.stat.exists
+
+- command: 'su {{user}} -c "makepkg -sri --noconfirm" creates={{item.creates}} chdir=/tmp/{{item.dir}}'
+  with_items:
+    - { dir: package-query, creates: /usr/bin/package-query }
+    - { dir: yaourt, creates: /usr/bin/yaourt }
+  when: not yaourt.stat.exists
+
+- file:
+    path: /tmp/{{item}}
+    state: absent
+  with_items:
+    - package-query.tar.gz
+    - package-query
+    - yaourt.tar.gz
+    - yaourt
+    - yaourt-tmp-{{user}}
+
+# TODO: this has nothing to do in this role
+# Packages installation with yaourt
+- command: 'su - {{user}} -c "TMPDIR=/home/{{user}}/Tmp yaourt -S --noconfirm {{item.package}}" creates={{item.creates}}'
+  with_items:
+    - { package: arj, creates: /usr/bin/arj }
+    - { package: perl-xml-rpc, creates: /usr/share/perl5/vendor_perl/XML/RPC.pm }
+    - { package: jdk, creates: /usr/lib/jvm/java-8-jdk/bin/java }
+    - { package: plymouth, creates: /usr/bin/plymouth }
+    - { package: google-earth, creates: /usr/bin/google-earth }
+    - { package: pepper-flash, creates: /usr/lib/PepperFlash/libpepflashplayer.so }
+    - { package: keepass-plugin-http, creates: /usr/share/keepass/plugins/KeePassHttp.plgx }
+    - { package: xflux, creates: /usr/bin/xflux }
+    - { package: bash_unit, creates: /usr/bin/bash_unit }
+    - { package: tcptraceroute, creates: /usr/bin/tcptraceroute }
+    - { package: ansible-lint, creates: /usr/bin/ansible-lint }
+    - { package: ttf-font-awesome, creates: /usr/share/fonts/TTF/fontawesome-webfont.ttf }
+    - { package: ttf-font-icons, creates: /usr/share/fonts/TTF/icons.ttf }
+    - { package: kindlegen, creates: /usr/bin/kindlegen }
+    - { package: arch-audit, creates: /usr/bin/arch-audit }
+#    - { package: otf-inconsolata-dz-powerline, creates: /usr/share/fonts/OTF/Inconsolata-dz-Powerline.otf }
+
+- lineinfile:
+    dest: /etc/mkinitcpio.conf
+    regexp: '^(HOOKS="base udev) (autodetect.*)'
+    line: '\1 plymouth \2'
+    backrefs: yes
+  notify: mkinitcpio

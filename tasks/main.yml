@@ -1,2 +1,5 @@
 - include: pacman.yml
   when: ansible_distribution == "Archlinux"
+
+- include: yaourt.yml
+  when: ansible_distribution == "Archlinux"
