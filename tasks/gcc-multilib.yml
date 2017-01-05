@@ -5,7 +5,7 @@
   register: pacman_needed_gcc_libs_files
 
 - stat: path={{item}}
-  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
+  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines|default([])}}"
   check_mode: no
   register: pacman_needed_gcc_libs_files_stat
 
