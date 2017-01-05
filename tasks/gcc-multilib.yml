@@ -25,7 +25,7 @@
 
 - shell: ldd $(which pacman) | grep "not found"
   register: pacman_has_libs
-  failed_when: pacman_has_libs.stdout_lines != []
+  failed_when: pacman_has_libs.stdout_lines|default([]) != []
 
 #- copy: src={{item.stat.path|regex_replace('/lib/','/local/lib/')}} dest={{item.stat.path}} remote_src=true
 #  with_items: "{{pacman_needed_gcc_libs_files_stat.results}}"
