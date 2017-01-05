@@ -1,24 +1,15 @@
+user: ansibleMe
 country: France
 base_packages:
   # general
   - bc
   - sharutils
-  - gnupg
   - expect
   - arandr
   - bash-completion
   - inotify-tools
   - tree
   - zenity
-  # compilation
-  - patch
-  - automake
-  - autoconf
-  - byacc
-  # languages
-  - python
-  - perl-json
-  - perl-ldap
   # disk
   - lsof
   - parted

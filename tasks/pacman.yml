@@ -47,6 +47,13 @@
     - libtool
     - make
     - fakeroot
+    - patch
+    - automake
+    - autoconf
+    - byacc
+    - python
+    - perl-json
+    - perl-ldap
 
 ### cache refreshing. Only when cache older than 1 week (7*24*60*60 seconds)
 - stat: path=/var/lib/pacman/sync/extra.db
