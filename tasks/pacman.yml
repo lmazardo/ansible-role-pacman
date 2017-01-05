@@ -32,7 +32,6 @@
 
 - shell: for file in $(ldd $(which pacman) | sed -r 's/^\s*([^ ]*) .*$/\1/') ; do pacman -Ql | grep $file ; done | grep ^gcc-libs | sed 's/^.* //'
   check_mode: no
-  changed_when: false
   register: pacman_needed_gcc_libs_files
   when: gcc_libs_multilib_installed|failed
 
@@ -40,14 +39,14 @@
   with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
   when: gcc_libs_multilib_installed|failed
 
-- shell: ldconfig /usr/local/lib
-  failed_when: false
-  when: gcc_libs_multilib_installed|failed
-
 - pacman: name=gcc-libs state=absent force=yes
   when: gcc_libs_multilib_installed|failed
 
-- pacman: name=gcc-libs-multilib
+- copy: src={{item|regex_replace('/lib/','/local/lib/')}} dest={{item}} remote_src=true
+  with_items: "{{pacman_needed_gcc_libs_files.stdout_lines}}"
+  when: gcc_libs_multilib_installed|failed
+
+- pacman: name=gcc-libs-multilib force=yes
   when: gcc_libs_multilib_installed|failed
 
 - file: path={{item|regex_replace('/lib/','/local/lib/')}} state=absent
