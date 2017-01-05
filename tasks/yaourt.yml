@@ -1,6 +1,8 @@
 # Creation of the ansibleme (default, changed by user variable) user, used for instalation purpose
 - user: name={{user}} group=users
 
+- pacman: name=sudo
+
 - file:
     path: /home/{{user}}/Tmp
     state: directory
