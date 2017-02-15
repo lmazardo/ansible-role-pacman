@@ -44,3 +44,5 @@
 - shell: ldconfig
 
 - pacman: name=gcc-multilib
+
+- pacman: name=lib32-zlib
