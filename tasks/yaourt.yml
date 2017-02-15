@@ -95,6 +95,7 @@
     - { package: ttf-font-icons, creates: /usr/share/fonts/TTF/icons.ttf }
     - { package: kindlegen, creates: /usr/bin/kindlegen }
     - { package: arch-audit, creates: /usr/bin/arch-audit }
+    - { package: cnijfilter2-mg7700, creates: /usr/share/ppd/canonmg6600.ppd }
 #    - { package: otf-inconsolata-dz-powerline, creates: /usr/share/fonts/OTF/Inconsolata-dz-Powerline.otf }
 
 - lineinfile:
