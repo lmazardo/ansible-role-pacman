@@ -98,6 +98,7 @@
     - { package: cnijfilter2-mg7700, creates: /usr/share/ppd/canonmg6600.ppd }
     - { package: scangearmp2-mg7700, creates: /usr/bin/scangearmp2 }
 #    - { package: otf-inconsolata-dz-powerline, creates: /usr/share/fonts/OTF/Inconsolata-dz-Powerline.otf }
+    - { package: browserpass, creates: /usr/bin/browserpass }
 
 - lineinfile:
     dest: /etc/mkinitcpio.conf

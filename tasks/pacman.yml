@@ -70,3 +70,6 @@
 ### installation of packages
 - pacman: name={{item}} state=present
   with_items: "{{base_packages}}"
+
+### this should move another place, but for now I don't know where
+- service: name=smartd state=started enabled=yes
