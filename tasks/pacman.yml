@@ -65,6 +65,8 @@
 ### pkgfile 
 - pacman: name=pkgfile
 
+  ### TODO
+  ### only do this step when necessary
 - shell: pkgfile --update
 
 ### installation of packages
