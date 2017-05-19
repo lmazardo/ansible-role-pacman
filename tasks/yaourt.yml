@@ -76,33 +76,33 @@
     - yaourt
     - yaourt-tmp-{{user}}
 
-# TODO: this has nothing to do in this role
-# Packages installation with yaourt
-- command: 'su - {{user}} -c "TMPDIR=/home/{{user}}/Tmp yaourt -S --noconfirm {{item.package}}" creates={{item.creates}}'
-  with_items:
-    - { package: arj, creates: /usr/bin/arj }
-    - { package: perl-xml-rpc, creates: /usr/share/perl5/vendor_perl/XML/RPC.pm }
-    - { package: jdk, creates: /usr/lib/jvm/java-8-jdk/bin/java }
-    - { package: plymouth, creates: /usr/bin/plymouth }
-    - { package: google-earth, creates: /usr/bin/google-earth }
-    - { package: pepper-flash, creates: /usr/lib/PepperFlash/libpepflashplayer.so }
-    - { package: keepass-plugin-http, creates: /usr/share/keepass/plugins/KeePassHttp.plgx }
-    - { package: xflux, creates: /usr/bin/xflux }
-    - { package: bash_unit, creates: /usr/bin/bash_unit }
-    - { package: tcptraceroute, creates: /usr/bin/tcptraceroute }
-    - { package: ansible-lint, creates: /usr/bin/ansible-lint }
-    - { package: ttf-font-awesome, creates: /usr/share/fonts/TTF/fontawesome-webfont.ttf }
-    - { package: ttf-font-icons, creates: /usr/share/fonts/TTF/icons.ttf }
-    - { package: kindlegen, creates: /usr/bin/kindlegen }
-    - { package: arch-audit, creates: /usr/bin/arch-audit }
-    - { package: cnijfilter2-mg7700, creates: /usr/share/ppd/canonmg6600.ppd }
-    - { package: scangearmp2-mg7700, creates: /usr/bin/scangearmp2 }
+## TODO: this has nothing to do in this role
+## Packages installation with yaourt
+#- command: 'su - {{user}} -c "TMPDIR=/home/{{user}}/Tmp yaourt -S --noconfirm {{item.package}}" creates={{item.creates}}'
+#  with_items:
+#    - { package: arj, creates: /usr/bin/arj }
+#    - { package: perl-xml-rpc, creates: /usr/share/perl5/vendor_perl/XML/RPC.pm }
+#    - { package: jdk, creates: /usr/lib/jvm/java-8-jdk/bin/java }
+#    - { package: plymouth, creates: /usr/bin/plymouth }
+#    - { package: google-earth, creates: /usr/bin/google-earth }
+#    - { package: pepper-flash, creates: /usr/lib/PepperFlash/libpepflashplayer.so }
+#    - { package: keepass-plugin-http, creates: /usr/share/keepass/plugins/KeePassHttp.plgx }
+#    - { package: xflux, creates: /usr/bin/xflux }
+#    - { package: bash_unit, creates: /usr/bin/bash_unit }
+#    - { package: tcptraceroute, creates: /usr/bin/tcptraceroute }
+#    - { package: ansible-lint, creates: /usr/bin/ansible-lint }
+#    - { package: ttf-font-awesome, creates: /usr/share/fonts/TTF/fontawesome-webfont.ttf }
+#    - { package: ttf-font-icons, creates: /usr/share/fonts/TTF/icons.ttf }
+#    - { package: kindlegen, creates: /usr/bin/kindlegen }
+#    - { package: arch-audit, creates: /usr/bin/arch-audit }
+#    - { package: cnijfilter2-mg7700, creates: /usr/share/ppd/canonmg6600.ppd }
+#    - { package: scangearmp2-mg7700, creates: /usr/bin/scangearmp2 }
 #    - { package: otf-inconsolata-dz-powerline, creates: /usr/share/fonts/OTF/Inconsolata-dz-Powerline.otf }
-    - { package: browserpass, creates: /usr/bin/browserpass }
+#    - { package: browserpass, creates: /usr/bin/browserpass }
 
-- lineinfile:
-    dest: /etc/mkinitcpio.conf
-    regexp: '^(HOOKS="base udev) (autodetect.*)'
-    line: '\1 plymouth \2'
-    backrefs: yes
-  notify: mkinitcpio
+#- lineinfile:
+#    dest: /etc/mkinitcpio.conf
+#    regexp: '^(HOOKS="base udev) (autodetect.*)'
+#    line: '\1 plymouth \2'
+#    backrefs: yes
+#  notify: mkinitcpio
